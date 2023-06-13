@@ -95,28 +95,40 @@ Sub CreatePDF(ByVal Kokyaku As String)
     Dim printRange As Range
     Set printRange = ws.Range(ws.Cells(SEI_HIDUKE_CLM, 1), ws.Cells(lastRow, SEI_KINGAKU_CLM))
     
-    ' PDF作成用の一時ファイルを保存するパスを指定
+    ' PDFファイルを保存するパスを指定
     Dim tempFilePath As String
     tempFilePath = "C:\個人\生島\install\VBA勉強用\sample\TempPDF_" & Format(Now(), "yyyymmdd_hhmmss") & ".pdf"
-    
-    ' プリンターを設定してPDFを作成
-    ' 現在のプリンターを保存しておく
-'Dim currentPrinter As String
-'currentPrinter = Application.ActivePrinter
 
-' 「Microsoft Print to PDF」プリンターを設定
-Application.ActivePrinter = "Microsoft Print to PDF on Ne01:"
-    
+    '「Microsoft Print to PDF」プリンターを設定
+    Application.ActivePrinter = "Microsoft Print to PDF on Ne01:"
     printRange.ExportAsFixedFormat Type:=xlTypePDF, Filename:=tempFilePath, Quality:=xlQualityStandard
-    
-    ' 元のプリンターに戻す
-'Application.ActivePrinter = currentPrinter
     
     ' PDF作成後、メッセージを表示
     MsgBox "PDF作成が完了しました。"
-
 End Sub
 
 Sub フォーム用意() 'ボタンに埋め込む用
     myForm.Show
 End Sub
+Sub 請求書削除()
+    ' 確認メッセージを表示し、削除を選択した場合のみ削除処理を実行する
+    Dim response As Integer
+    response = MsgBox("作成した請求書を一括で削除しますか？", vbQuestion + vbYesNo, "確認")
+    
+    If response = vbYes Then
+        Dim ws As Worksheet
+        Application.DisplayAlerts = False ' 確認メッセージを非表示にする
+        
+        For Each ws In ThisWorkbook.Worksheets
+            If ws.Name <> "販売" And ws.Name <> "請求書雛形" And ws.Name <> "設定" Then
+                ws.Delete
+            End If
+        Next ws
+        
+        Application.DisplayAlerts = True ' 確認メッセージを再表示する
+        
+        MsgBox "削除が完了しました。"
+    End If
+End Sub
+
+
